@@ -5,12 +5,11 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
+const { ensureCorrectUserOrAdmin, ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 const userRegisterSchema = require("../schemas/userRegister.json");
-const userAuthSchema = require("../schemas/userAuth.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
@@ -28,7 +27,7 @@ const router = express.Router();
  * Authorization required: admin
  **/
 
-router.post("/",  async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userRegisterSchema);
     if (!validator.valid) {
@@ -52,7 +51,7 @@ router.post("/",  async function (req, res, next) {
  * Authorization required: admin
  **/
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
     const users = await User.findAll();
     return res.json({ users });
@@ -70,7 +69,7 @@ router.get("/", async function (req, res, next) {
  * Authorization required: admin or same user-as-:username
  **/
 
-router.get("/:username", async function (req, res, next) {
+router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
     return res.json({ user });
@@ -90,7 +89,7 @@ router.get("/:username", async function (req, res, next) {
  * Authorization required: admin or same-user-as-:username
  **/
 
-router.patch("/:username",  async function (req, res, next) {
+router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userUpdateSchema);
     if (!validator.valid) {
@@ -111,7 +110,7 @@ router.patch("/:username",  async function (req, res, next) {
  * Authorization required: admin or same-user-as-:username
  **/
 
-router.delete("/:username",  async function (req, res, next) {
+router.delete("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
     await User.remove(req.params.username);
     return res.json({ deleted: req.params.username });

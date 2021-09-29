@@ -5,40 +5,30 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
+const { ensureCorrectUserOrAdmin, ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
-const User = require("../models/user");
+const Message = require("../models/message");
 const { createToken } = require("../helpers/tokens");
-const userRegisterSchema = require("../schemas/userRegister.json");
-const userAuthSchema = require("../schemas/userAuth.json")
+const messageCreate = require("../schemas/messageCreate.json");
 // const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
 
 
 /** POST / { user }  => { user, token }
- *
- * Adds a new user. This is not the registration endpoint --- instead, this is
- * only for admin users to add new users. The new user being added can be an
- * admin.
- *
- * This returns the newly created user and an authentication token for them:
- *  {user: { username, firstName, lastName, email, isAdmin }, token }
- *
- * Authorization required: admin
+ * creats a new message
  **/
 
-router.post("/",  async function (req, res, next) {
+router.post("/:user_id", ensureCorrectUserOrAdmin ,async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, userRegisterSchema);
+    const validator = jsonschema.validate(req.body, messageCreate);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const user = await User.register(req.body);
-    const token = createToken(user);
-    return res.status(201).json({ user, token });
+    const message = await Message.newMessage(req.params.user_id, req.body);
+    return res.json({ message });
   } catch (err) {
     return next(err);
   }
@@ -54,52 +44,49 @@ router.post("/",  async function (req, res, next) {
 
 router.get("/", async function (req, res, next) {
   try {
-    const users = await User.findAll();
-    return res.json({ users });
+    const messages = await Message.findAll();
+    return res.json({ messages });
   } catch (err) {
     return next(err);
   }
 });
 
 
-/** GET /[username] => { user }
+/** GET /[user_id] => { messages }
  *
- * Returns { username, firstName, lastName, isAdmin, jobs }
- *   where jobs is { id, title, companyHandle, companyName, state }
- *
- * Authorization required: admin or same user-as-:username
+ * Returns messages for a specific user
  **/
 
-router.get("/:username", async function (req, res, next) {
+router.get("/:user_id", ensureLoggedIn, async function (req, res, next) {
   try {
-    const user = await User.get(req.params.username);
-    return res.json({ user });
+    const messages = await Message.findUserMessages(req.params.user_id);
+    return res.json({ messages });
   } catch (err) {
     return next(err);
   }
 });
 
 
-/** PATCH /[username] { user } => { user }
+/** PATCH /[message_id] { user } => { user }
  *
  * Data can include:
- *   { firstName, lastName, password, email }
+ *   { message }
  *
- * Returns { username, firstName, lastName, email, isAdmin }
+ * Returns { updated message }
  *
  * Authorization required: admin or same-user-as-:username
  **/
 
-router.patch("/:username",  async function (req, res, next) {
+router.patch("/:message_id",  async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, userUpdateSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+    // const validator = jsonschema.validate(req.body, userUpdateSchema);
+    // if (!validator.valid) {
+    //   const errs = validator.errors.map(e => e.stack);
+    //   throw new BadRequestError(errs);
+    // }
 
-    const user = await User.update(req.params.username, req.body);
-    return res.json({ user });
+    const message = await Message.update(req.params.message_id, req.body);
+    return res.json({ message });
   } catch (err) {
     return next(err);
   }
