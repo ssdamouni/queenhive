@@ -10,6 +10,7 @@ const { BadRequestError } = require("../expressError");
 const Message = require("../models/message");
 const { createToken } = require("../helpers/tokens");
 const messageCreate = require("../schemas/messageCreate.json");
+const messageUpdate = require("../schemas/messageUpdate.json")
 // const userUpdateSchema = require("../schemas/userUpdate.json");
 
 const router = express.Router();
@@ -42,7 +43,7 @@ router.post("/:user_id", ensureCorrectUserOrAdmin ,async function (req, res, nex
  * Authorization required: admin
  **/
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
     const messages = await Message.findAll();
     return res.json({ messages });
@@ -77,13 +78,13 @@ router.get("/:user_id", ensureLoggedIn, async function (req, res, next) {
  * Authorization required: admin or same-user-as-:username
  **/
 
-router.patch("/:message_id",  async function (req, res, next) {
+router.patch("/:message_id", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
-    // const validator = jsonschema.validate(req.body, userUpdateSchema);
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
+    const validator = jsonschema.validate(req.body, messageUpdate);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
 
     const message = await Message.update(req.params.message_id, req.body);
     return res.json({ message });
