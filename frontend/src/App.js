@@ -6,11 +6,15 @@ import QueenHiveApi from './api';
 import useLocalStorage from "./hooks/useLocalStorage";
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
+import QueenList from './QueenList'
 // import Profile from './Profile';
+import Home from './Home';
 import ReadList from './ReadList'
 import NavBar from './Navbar';
 import UserContext from "./UserContext";
 import jwt from "jsonwebtoken";
+import axios from 'axios';
+import QueenProfile from './QueenProfile';
 
 export const TOKEN_STORAGE_ID = "queenhive-token";
 
@@ -18,6 +22,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [token, setToken] = useLocalStorage(TOKEN_STORAGE_ID);
   const [messages, setMessages] = useState([]);
+  const [queens, setQueens] = useState([]);
 
   useEffect(() => {
     async function getCurrentUser() {
@@ -45,6 +50,15 @@ function App() {
     getMessages();
   }, []);
 
+  useEffect(() => {
+    async function getQueens() {
+      let queens = await axios.get('http://www.nokeynoshade.party/api/queens/all');
+      setQueens(queens.data);
+    }
+    getQueens();
+  }, []);
+
+
   function logout() {
     setCurrentUser(null);
     setToken(null);
@@ -54,6 +68,7 @@ function App() {
     try {
       let token = await QueenHiveApi.signup(signupData);
       setToken(token);
+      setCurrentUser(signupData.username);
       return { success: true };
     } catch (errors) {
       console.error("signup failed", errors);
@@ -65,6 +80,7 @@ function App() {
     try {
       let token = await QueenHiveApi.login(loginData);
       setToken(token);
+      setCurrentUser(loginData.username);
       return { success: true };
     } catch (errors) {
       console.error("login failed", errors);
@@ -85,6 +101,15 @@ function App() {
             </Route>
             <Route exact path="/messages">
               <ReadList messages={messages}/>
+            </Route>
+            <Route exact path="/queens">
+              <QueenList queens={queens}/>
+            </Route>
+            <Route path="/queens/:id">
+                <QueenProfile queens={queens} cantFind="/queens" />
+            </Route>
+            <Route exact path="/">
+              <Home login={login} />
             </Route>
           </Switch>
         </UserContext.Provider>

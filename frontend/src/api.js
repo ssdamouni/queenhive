@@ -62,7 +62,6 @@ class QueenHiveApi {
 
   static async getMessages() {
     let res = await this.request(`messages`);
-    console.log(res.messages)
     return res.messages;
   }
 

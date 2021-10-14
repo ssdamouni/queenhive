@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext} from "react";
 import './Navbar.css'
+import UserContext from "./UserContext";
 import { NavLink } from "react-router-dom";
 import { Navbar, Nav, NavItem } from "reactstrap";
 
 function NavBar({ logout }) {
+  const { currentUser } = useContext(UserContext);
   return (
     <div>
       <Navbar expand="md">
@@ -21,7 +23,7 @@ function NavBar({ logout }) {
           <NavItem>
             <NavLink to="/queens">Queens</NavLink>
           </NavItem>
-          {localStorage["queenhive-token"] ?
+          {currentUser ?
             <NavItem>
               <button onClick={logout}>LogOut</button>
             </NavItem> :

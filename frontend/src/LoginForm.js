@@ -30,7 +30,7 @@ function LoginForm({login}) {
     evt.preventDefault();
     let result = await login(formData);
     if (result.success) {
-      history.push("/companies");
+      history.push("/");
     } else {
       setFormErrors(result.errors);
     }
@@ -82,6 +82,7 @@ function LoginForm({login}) {
                 </button>
                 {formErrors ? <h3>{formErrors}</h3> : null}
               </form>
+              <h3>To register click <a href="/users/signup">here</a>!</h3>
             </div>
           </div>
         </div>
