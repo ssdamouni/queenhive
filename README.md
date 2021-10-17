@@ -1,5 +1,5 @@
 # queenHive
-## RuPaul's Drag Race Dicussion Website 
+## RuPaul's Drag Race Discussion Website 
 
 queenHive is a simple web app designed for users to post their thoughts and opinions on the latest epsions of the RuPaul's Drag race. They can also favorite their favorite queens.  
 
