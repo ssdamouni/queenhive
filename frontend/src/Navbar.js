@@ -1,38 +1,33 @@
 import React, { useContext} from "react";
-import './Navbar.css'
 import UserContext from "./UserContext";
-import { NavLink } from "react-router-dom";
-import { Navbar, Nav, NavItem } from "reactstrap";
+import './Navbar.css'
+import { Navbar, Nav, Container } from 'react-bootstrap';
 
 function NavBar({ logout }) {
   const { currentUser } = useContext(UserContext);
   return (
-    <div>
-      <Navbar expand="md">
-        <NavLink exact to="/" className="navbar-brand">
-          queenHive
-        </NavLink>
-
-        <Nav className="ml-auto" navbar>
-          <NavItem>
-            <NavLink to="/users">Users</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink to="/messages">Reads</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink to="/queens">Queens</NavLink>
-          </NavItem>
-          {currentUser ?
-            <NavItem>
-              <button onClick={logout}>LogOut</button>
-            </NavItem> :
-            <NavItem>
-              <NavLink to="/users/login">Login/</NavLink>
-              <NavLink to="/users/signup">Signup</NavLink>
-            </NavItem>}
-         
-        </Nav>
+    <div className="Navbar">
+      <Navbar collapseOnSelect className="mb-2" sticky='top' fixed='top' expand="sm" bg="dark" variant='dark'>
+        <Container>
+          <Navbar.Toggle aria-controls='responsive-navbar-nav'/>
+          <Navbar.Collapse id='responsive-navbar-nav'>
+            <Nav>
+                <Nav.Link href="/" className="navbar-brand">queenHive</Nav.Link>
+                <Nav.Link href="/users">Users</Nav.Link>
+                <Nav.Link href="/messages">Reads</Nav.Link>
+                <Nav.Link href="/queens">Queens</Nav.Link>
+                {currentUser ?
+                    <button onClick={logout}>LogOut</button>
+                  :
+                    <Nav>
+                      <Nav.Link href="/users/login">Login</Nav.Link>
+                      <Nav.Link href="/users/signup">Signup</Nav.Link>
+                    </Nav>
+                  }
+            
+                </Nav>
+          </Navbar.Collapse>
+        </Container>
       </Navbar>
     </div>
   );

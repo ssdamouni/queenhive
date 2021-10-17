@@ -65,12 +65,11 @@ class QueenHiveApi {
     return res.messages;
   }
 
-  static async addCompany(payload){
-    console.log(this.token)
-    let res = await this.request('companies/', payload, "post");
-    console.log(res)
-    return res.data
+  static async addMessage(data, userId) {
+    let res = await this.request(`messages/${userId}`, data, "post");
+    return res;
   }
+
 
   static async updateCompany(handle, payload){
     let res = await this.request(`companies/${handle}`, payload, "patch");

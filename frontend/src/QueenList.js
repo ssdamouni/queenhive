@@ -1,5 +1,4 @@
 import React from "react";
-import Queen from "./Queen";
 import { Link } from 'react-router-dom';
 
 const QueenList = ({ queens }) =>{

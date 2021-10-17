@@ -15,6 +15,8 @@ import UserContext from "./UserContext";
 import jwt from "jsonwebtoken";
 import axios from 'axios';
 import QueenProfile from './QueenProfile';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ReadForm from './ReadForm';
 
 export const TOKEN_STORAGE_ID = "queenhive-token";
 
@@ -87,6 +89,15 @@ function App() {
       return { success: false, errors };
     }
   }
+  async function addMessage(data, userId) {
+    try {
+      let res = await QueenHiveApi.addMessage(data, userId);
+      return { success: true };
+    } catch (errors) {
+      console.error("login failed", errors);
+      return { success: false, errors };
+    }
+  }
   return (
     <div className="App">
       <BrowserRouter>
@@ -101,6 +112,9 @@ function App() {
             </Route>
             <Route exact path="/messages">
               <ReadList messages={messages}/>
+            </Route>
+            <Route exact path="/messages/add">
+              <ReadForm addMessage={addMessage} login={login} />
             </Route>
             <Route exact path="/queens">
               <QueenList queens={queens}/>
