@@ -5,14 +5,15 @@ import React from "react";
 
 const QueenProfile = ({queens}) =>{
     const { id } = useParams();
-    if(!queens){
+    let queenList = queens;
+    if(!queenList){
         async function getQueens(){
             let res = await axios.get('http://www.nokeynoshade.party/api/queens/all');
-            queens = res.data
+            return res.data
         }
-        getQueens();
+       queenList = getQueens();
     }
-    let queen = queens.find(o => o.id === id);
+    let queen = queenList.find(o => o.id === parseInt(id));
     console.log(queen)
     if (!queen){
         return <h2>loading...</h2>
