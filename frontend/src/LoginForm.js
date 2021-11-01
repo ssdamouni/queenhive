@@ -12,7 +12,7 @@ import { useHistory } from "react-router-dom";
  * Routed as /login
  */
 
-function LoginForm({login}) {
+function LoginForm({login, state}) {
   const history = useHistory();
   const [formData, setFormData] = useState({
     username: "",

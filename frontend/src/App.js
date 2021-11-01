@@ -56,6 +56,7 @@ function App() {
     async function getQueens() {
       let queens = await axios.get('http://www.nokeynoshade.party/api/queens/all');
       setQueens(queens.data);
+      return { success: true };
     }
     getQueens();
   }, []);
@@ -82,7 +83,7 @@ function App() {
     try {
       let token = await QueenHiveApi.login(loginData);
       setToken(token);
-      setCurrentUser(loginData.username);
+      setCurrentUser(loginData);
       return { success: true };
     } catch (errors) {
       console.error("login failed", errors);

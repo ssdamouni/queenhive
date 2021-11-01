@@ -1,4 +1,4 @@
-import React, { useContext} from "react";
+import React, { useContext } from "react";
 import UserContext from "./UserContext";
 import './Navbar.css'
 import { Navbar, Nav, Container } from 'react-bootstrap';

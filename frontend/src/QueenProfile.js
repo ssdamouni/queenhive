@@ -1,4 +1,4 @@
-import { Redirect, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import React from "react";
@@ -12,7 +12,7 @@ const QueenProfile = ({queens}) =>{
         }
         getQueens();
     }
-    let queen = queens.find(o => o.id == id);
+    let queen = queens.find(o => o.id === id);
     console.log(queen)
     if (!queen){
         return <h2>loading...</h2>
